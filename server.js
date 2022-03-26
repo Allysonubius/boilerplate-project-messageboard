@@ -33,14 +33,29 @@ app.route('/').get(function(req, res) {
 //Start our server and tests!
 const listener = app.listen(process.env.PORT, function() {
     database(process.env.MONGO_URI).then(async(MONGO_URI) => {
-        console.log('\n', 1, ' = CONECTADO', '\n', 2, ' = CONECTANDO', '\n', 3, ' = DESCONECTANDO', '\n', 0, ' = DESCONECTADO', '\n\n', 'STATUS DE CONEXÂO COM O BANCO DE DADOS :', mongoose.connection.readyState);
-        console.log('\n', `Your app is listening on port http://localhost/${listener.address().port}`);
+        const acess_port = `Your app is listening on port http://localhost/${listener.address().port}`;
+        switch (mongoose.connection.readyState) {
+
+            case 1:
+                console.log('\n', 'MONGODB CONECTADO', '\n\n', acess_port);
+                break;
+            case 2:
+                console.log('\n', 'MONGODB CONECTANDO', '\n\n', acess_port);
+                break;
+            case 3:
+                console.log('\n', 'MONGODB DESCONECTANDO', '\n\n', acess_port);
+                break;
+            case 4:
+                console.log('\n', 'MONGODB DESCONECTADO', '\n\n', acess_port);
+                break;
+            default:
+                console.log('\n', 'MONGODB FORA DO AR', '\n\n', acess_port)
+        }
         // For FCC testing purposes
         fccTestingRoutes(app);
         // Routing for API 
         apiRoutes(app);
-        // Error Handler Middleware
-        app.use(errorHandler);
+
         // 404 Not Found Middleware
         app.use(notFoundHandler);
         if (process.env.NODE_ENV) {
